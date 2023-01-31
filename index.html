@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Roberto no me ha dado tiempo a hacerlo mas bonito, el css no se me da bien, nos ha faltado tiempo -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <LINK REL="stylesheet" TYPE="text/css" HREF="style.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript">
+
+        /*Metodo para convertir la imagen en base 64 para guardarlo
+        nose si pedias guardar el url de la imagen o en base 64.
+        Lo he guardado solo la url*/
+        function toDataURL(src, callback) {
+            var image = new Image();
+            image.crossOrigin = 'Anonymous';
+            image.onload = function () {
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                canvas.height = this.naturalHeight;
+                canvas.width = this.naturalWidth;
+                context.drawImage(this, 0, 0);
+                var dataURL = canvas.toDataURL('image/jpeg');
+                callback(dataURL);
+            };
+            image.src = src;
+        }
+
+        function guardar() {
+            let id = document.getElementById('id_personaje').value;
+            let nombre = document.getElementById("nombre").value;
+            let estado = document.getElementById("estado").value;
+            let especie = document.getElementById("especie").value;
+            let genero = document.getElementById("genero").value;
+            let localizacion = document.getElementById("localizacion").value;
+            let imagen = document.getElementById("imagen").src.toString();
+            let imagen64;
+             /* toDataURL(imagen, function(dataURL){
+        imagen64=dataURL;      
+    })  */
+            $.ajax({
+                type: "POST", 
+                url: "Datos.php", 
+                data: { id: id, nombre: nombre, estado: estado, especie: especie, genero: genero, location: localizacion, imagen: imagen /*imagen64*/ }, 
+                success: function (response) { 
+                    alert(response);
+                },
+                error: function () {
+                    alert("Ya esta guardado");
+                }
+            });
+            
+           
+            console.log(imagen);
+        }
+    </script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        function getGroupInfo() {
+            var strBusquedaGrupo = document.getElementById('busqueda').value;
+            axios
+                .get("https://rickandmortyapi.com/api/character/" + strBusquedaGrupo)
+                .then(response => {
+                    console.log(response.data);
+                    document.getElementById('id_personaje').value = response.data.id;
+                    document.getElementById("nombre").value = response.data.name;
+                    document.getElementById("estado").value = response.data.status;
+                    document.getElementById("especie").value = response.data.species;
+                    document.getElementById("genero").value = response.data.gender;
+                    document.getElementById("localizacion").value = response.data.location.name;
+                    document.getElementById("imagen").src = response.data.image;
+                })
+                .catch(error => {
+                    console.log(error);
+                    document.getElementById('id_personaje').value = "";
+                    document.getElementById("nombre").value = "";
+                    document.getElementById("estado").value = "";
+                    document.getElementById("especie").value = "";
+                    document.getElementById("genero").value = "";
+                    document.getElementById("localizacion").value = "";
+                    alert("Error");
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <input id="busqueda" type="text" placeholder="Introduce el id">
+        <button id="buscar" onclick="getGroupInfo()">Buscar</button>
+        <div class="card">
+            <!-- <form id="formularioDatos"> -->
+            Id:<input id="id_personaje" name="id" type="text" disabled>
+            <br>
+            <br>
+            Nombre:<input id="nombre" name="nombre" type="text" disabled>
+            <br>
+            <br>
+            Estado:<input id="estado" name="estado" type="text" disabled>
+            <br>
+            <br>
+            Especie:<input id="especie" name="especie" type="text" disabled>
+            <br>
+            <br>
+            Genero:<input id="genero" name="genero" type="text" disabled>
+            <br>
+            <br>
+            Localización:<input id="localizacion" name="localizacion" type="text" disabled>
+            <br>
+            <br>
+            <div class="centrado">
+                <img id="imagen" src="./Rick_y_Morty.jpg" width="230" height="300">
+                <br>
+                <br>
+                <button class="boton" id="guardar" onclick="guardar()">Guardar</button>
+            </div>
+            <!-- </form> -->
+        </div>
+    </div>
+
+    <!--     <script src="https://code.jquery.com/jquery-3.6.3.slim.js" integrity="sha256-DKU1CmJ8kBuEwumaLuh9Tl/6ZB6jzGOBV/5YpNE2BWc=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+
+</body>
+
+</html>
